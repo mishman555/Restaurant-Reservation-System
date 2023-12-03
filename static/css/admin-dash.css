@@ -1,0 +1,96 @@
+/* Reset some default browser styles */
+body {
+    margin: 0;
+    padding: 0;
+    background-image: url('/static/images/admin_bg.jpg'); /* Replace with the actual path to your image */
+    background-size: cover;
+    background-position: center;
+
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+/*     background-color: #fff;*/
+    background-color: rgba(255, 255, 255, 0.7); /* Transparent white background */
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #333;
+/*    background-color: #fff;*/
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+
+/* Style the reservation information */
+td p {
+    margin: 5px 0;
+    color: black
+}
+
+/* Style the "No Reservations" message */
+td p:only-child {
+    color: #070707;
+}
+
+/* Responsive table styling */
+@media (max-width: 600px) {
+    th, td {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+/* Add this style for the logout form */
+.logout-form {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+/* Style for the logout button */
+.logout-form input {
+    padding: 8px 16px;
+    background-color: #02264d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.logout-form input:hover {
+    background-color: #718498;
+}
+
+button {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #041e3a;
+    color: white;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #718498;
+}
+
+

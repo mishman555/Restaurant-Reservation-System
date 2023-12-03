@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make a Reservation</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Make a Reservation</h2>
+        <form action="/submit_reservation" method="post">
+            <input type="text" name="username" value="{{ user_data['username'] }}" readonly class="input-style">
+            <input type="text" name="name" value="{{ user_data['name'] }}" readonly class="input-style">
+            <input type="email" name="email" value="{{ user_data['email'] }}" readonly class="input-style">
+            <input type="text" name="phone_number" value="{{ user_data['phone_number'] }}" readonly class="input-style">
+            <input type="number" name="number_of_seats" placeholder="Number of Seats" required class="input-style" min="1">
+            <input type="datetime-local" name="reservation_date" required class="input-style">
+            <button type="submit" class="button-style">Reserve</button>
+        </form>
+    </div>
+</body>
+</html>

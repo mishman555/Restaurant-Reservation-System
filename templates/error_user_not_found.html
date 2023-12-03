@@ -1,0 +1,25 @@
+<!-- templates/error_user_not_found.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Error</h2>
+        <p>An error occurred while processing your request.</p>
+        
+        <!-- Add additional information about the error if needed -->
+        <p>Error Message: {{ error_message }}</p>
+
+        <!-- Add a "Home" button that redirects to the dashboard -->
+        <!--form action="/" method="get"-->
+            <!-- input type="submit" value="Home"-->
+        <!-- /form -->
+        <a href="/" class="button-style">Return Home</a> 
+    </div>
+</body>
+</html>

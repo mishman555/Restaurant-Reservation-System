@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/css/admin-dash.css">
+</head>
+<body>
+    {% if not session.admin_logged_in %}
+        <p>You are not logged in as an admin. Please <a href="/admin/login">login</a>.</p>
+    {% else %}
+        <div class="container">
+            <h2>Customer Reservations</h2>
+            <!-- "Remove All Customers"  -->
+            <form action="/remove_all_customers" method="post">
+                <button type="submit" class="button-style">Remove All Customers</button>
+                <!-- input type="submit" value="Remove All Customers" -->
+            </form>
+
+            <form action="/admin/logout" method="post" class="logout-form">
+                <input type="submit" value="Logout">
+            </form>
+        
+            <table>
+                <tr>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Seated</th>
+                    <th>Reservations</th>
+                    <th>Action</th>
+                </tr>
+                {% for customer in customer_reservations %}
+                <tr>
+                    <td>{{ customer.username }}</td>
+                    <td>{{ customer.name }}</td>
+                    <td>{{ customer.email }}</td>
+                    <td>
+                        {% for reservation in customer.reservations %}
+                        {{ "Yes" if customer.reservations|selectattr('seated', 'equalto', true)|list else "No" }}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for reservation in customer.reservations %}
+                            <p>Reservation ID: {{ reservation.reservationId }}, 
+                               Seats: {{ reservation.number_of_seats }}, 
+                               Date: {{ reservation.reservation_date }}</p>
+                        {% else %}
+                            <p>No Reservations</p>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for reservation in customer.reservations %}
+                            <form action="/update_customer_status/{{ customer.username }}/{{ reservation.reservationId }}" method="post">
+                                <input type="submit" value="Mark Seated">
+                            </form>
+                            {% if not reservation.canceled %}
+                                <form action="/cancel_reservation/{{ customer.username }}/{{ reservation.reservationId }}" method="post">
+                                    <input type="submit" value="Cancel Reservation">
+                                </form>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+</body>
+</html>
