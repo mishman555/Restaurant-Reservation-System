@@ -3,12 +3,29 @@ from models.reservation import Reservation
 from config.db_config import get_db
 
 class adminView:
+    """
+    A class representing the view and actions of an admin in the restaurant reservation system.
+
+    Attributes:
+    - db: Database instance.
+    - customers: Collection of customer documents in the database.
+    - reservations: Collection of reservation documents in the database.
+    """
     def __init__(self):
+        """
+        Initialize an AdminView instance with a connection to the database.
+        """
         self.db = get_db()
         self.customers=self.db.customers
         self.reservations = self.db.reservations
     
     def adminData(self):
+        """
+        Retrieve customer reservations for admin display.
+
+        Returns:
+        list: List of dictionaries containing customer data and their reservations.
+        """
         customers_collection = self.customers
         reservations_collection = self.reservations
         
@@ -26,29 +43,30 @@ class adminView:
                     "seated": customer.get("seated", False),
                     "reservations": reservations
                 }
-#               if not all(reservation.get("seated", False) for reservation in reservations):
                 customer_reservations.append(customer_data)
         
-        print("Filtered Customer Reservations:", customer_reservations)
         return customer_reservations    
 
-    
     def update_customer_status(self, customer_username, reservation_id):
+        """
+        Update the seated status of a customer and their reservation.
+
+        Parameters:
+        - customer_username (str): Username of the customer.
+        - reservation_id (int): ID of the reservation.
+
+        Returns:
+        dict: Dictionary indicating the success or failure of the operation.
+        """
         result_customer = self.customers.update_one({"username": customer_username}, {"$set": {"seated": True}})
  
-        print(f"result modified is {result_customer.modified_count}")
         if result_customer.modified_count >= 0:
             # Check if the reservation exists
             reservation = self.reservations.find_one({"reservationId": reservation_id})
             if reservation:
-                print(f"Updating reservation status for {reservation_id}")
                 filter = {"reservationId": reservation_id}
                 update = {"$set": {"seated": True}}
                 result_reservation = self.reservations.update_one(filter, update)
-                print(f"Filter: {filter}, Update: {update}")
-
- #              result_reservation = self.reservations.update_one({"reservationId": reservation_id}, {"$set": {"seated": True}})
-                print(f"Result for reservation update: {result_reservation.modified_count} document(s) modified")
 
                 if result_reservation.modified_count > 0:
                     return {"success": True, "message": f"Customer {customer_username} status and reservation {reservation_id} marked as seated successfully."}
@@ -58,10 +76,19 @@ class adminView:
             return {"success": False, "message": f"Failed to update customer {customer_username} status."}
 
     def cancel_reservation(self, customer_username, reservation_id):
-        # Update reservation status to canceled
-        print(f"Canceling reservation status for {reservation_id} and username {customer_username}")
+        """
+        Cancel a reservation by updating its status.
+
+        Parameters:
+        - customer_username (str): Username of the customer.
+        - reservation_id (int): ID of the reservation.
+
+        Returns:
+        dict: Dictionary indicating the success or failure of the operation.
+        """
+
         reservation = self.reservations.find_one({"reservationId": reservation_id})
-        print(f"reservation is {reservation}")
+
         if reservation:
             result_reservation = self.reservations.update_one(
                 {"reservationId": reservation_id},
@@ -74,10 +101,15 @@ class adminView:
                 return {"success": False, "message": f"Failed to cancel reservation {reservation_id}."}
 
     def remove_all_customers(self):
+        """
+        Remove all customers and their reservations from the database.
+
+        Returns:
+        dict: Dictionary indicating the success or failure of the operation.
+        """
         customers_collection = self.customers
         reservations_collection = self.reservations
 
-        # Remove all customers
         result_customers_removed = customers_collection.delete_many({})
         result_reservations_removed = reservations_collection.delete_many({})
         if result_customers_removed.deleted_count > 0 and result_reservations_removed.deleted_count > 0:

@@ -6,7 +6,23 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 class customerView:
+    """
+    A class representing the view and actions of a customer in the restaurant reservation system.
+    """
     def __init__(self,customerId=None,username=None,name=None,address=None,phoneNumber=None,email=None, seated=False):
+        """
+        Initialize a CustomerView instance with customer information and a connection to the database.
+
+        Attributes:
+        - customerId (str): ID of the customer.
+        - username (str): Username of the customer.
+        - name (str): Name of the customer.
+        - address (str): Address of the customer.
+        - phoneNumber (str): Phone number of the customer.
+        - email (str): Email address of the customer.
+        - seated (bool): Seated status of the customer.
+        - db: Database instance.
+        """
         self.customerId=customerId
         self.username=username
         self.name=name
@@ -17,6 +33,13 @@ class customerView:
         self.db = get_db()
 
     def send_email(self, subject, body):
+        """
+        Send an email to the customer.
+
+        Parameters:
+        - subject (str): Subject of the email.
+        - body (str): Body of the email.
+        """
         # Email configuration
         sender_email = "restaurantreservationsbing@gmail.com"
         sender_password = "zmda carx cmxs roqr"
@@ -41,6 +64,12 @@ class customerView:
 
     
     def insert(self):
+        """
+        Insert a new customer into the database.
+
+        Returns:
+        dict: Dictionary indicating the success or failure of the operation.
+        """
         try:
             customers_collection = self.db.customers
             customer = Customer(
@@ -70,6 +99,16 @@ class customerView:
             return {"success": False, "message": f"An error occurred: {e}"}
     
     def update_customer_status(self, customer_id, seated=True):
+        """
+        Update the seated status of a customer.
+
+        Parameters:
+        - customer_id (str): ID of the customer.
+        - seated (bool): New seated status.
+
+        Returns:
+        dict: Dictionary indicating the success or failure of the operation.
+        """
         try:
             customers_collection = self.db.customers
             result = customers_collection.update_one(
@@ -86,11 +125,26 @@ class customerView:
             return {"success": False, "message": f"An error occurred: {e}"}
     
     def find(self):
+        """
+        Find a customer by their username.
+
+        Returns:
+        dict: Dictionary representing the customer document in the database.
+        """
         customers_collection = self.db.customers
         user = customers_collection.find_one({"username": self.username})
         return user
     
     def find_customer_id_by_username(self, username):
+        """
+        Find a customer's ID by their username.
+
+        Parameters:
+        - username (str): Username of the customer.
+
+        Returns:
+        str: Customer ID.
+        """
         customers_collection = self.db.customers
         customer = customers_collection.find_one({"username": username})
 

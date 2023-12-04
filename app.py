@@ -16,18 +16,22 @@ working_hours_end = time(23, 0)   # 11 pm
 
 @app.route('/')
 def index():
+    """Render the index page."""
     return render_template('index.html')
 
 @app.route('/new_customer', methods=['GET'])
 def new_customer_form():
+    """Render the new customer form page."""
     return render_template('new_customer.html')
 
 @app.route('/existing_user')
 def existing_user():
+    """Render the existing user page."""
     return render_template('existing_user.html')
 
 @app.route('/make_reservation', methods=['GET'])
 def make_reservation():
+    """Render the reservation page."""
     user_data = session.get('user_data')
     if user_data:
         return render_template('reservation.html', user_data=user_data)
@@ -36,7 +40,7 @@ def make_reservation():
 
 @app.route('/api/new_customer', methods=['POST'])
 def add_customer():
-
+    """Add a new customer."""
     username=request.form.get('username'),
     # Check if the username already exists
     if customerView(username=username).find():
@@ -67,6 +71,7 @@ def add_customer():
 
 @app.route('/login', methods=['POST'])
 def login():
+    """Handle user login."""
     customer = customerView(username=request.form.get('username'))
     user=customer.find()
 
@@ -85,6 +90,7 @@ def login():
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
+    """Handle admin login."""
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -100,12 +106,14 @@ def admin_login():
 
 @app.route('/admin/logout', methods=['POST'])
 def admin_logout():
+    """Handle admin logout."""
     # Clear admin session
     session.pop('admin', None)
     return redirect(url_for('index'))
     
 @app.route('/submit_reservation', methods=['POST'])
 def submit_reservation():
+    """Submit a reservation."""
     # Get the reservation date and time from the form
     reservation_date_str = request.form['reservation_date']
     reservation_date = datetime.strptime(reservation_date_str, '%Y-%m-%dT%H:%M').time()
@@ -132,6 +140,7 @@ def submit_reservation():
     
 @app.route('/admin/dashboard')
 def admin_dashboard():
+    """Render the admin dashboard."""
     # Check if the admin is logged in
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
@@ -141,6 +150,7 @@ def admin_dashboard():
 
 @app.route('/remove_all_customers', methods=['POST'])
 def remove_all_customers():
+    """Remove all customers."""
     admin_view = adminView()
     result = admin_view.remove_all_customers()
     if result['success']:
@@ -151,12 +161,14 @@ def remove_all_customers():
 
 @app.route('/update_customer_status/<string:customer_username>/<int:reservation_id>', methods=['POST'])
 def update_customer_status(customer_username, reservation_id):
+    """Update customer status."""
     admin_view = adminView()
     admin_view.update_customer_status(customer_username, reservation_id)
     return redirect('/admin/dashboard')
 
 @app.route('/cancel_reservation/<string:customer_username>/<int:reservation_id>', methods=['POST'])
 def cancel_reservation(customer_username, reservation_id):
+    """Cancel a reservation."""
     admin_view = adminView()
 
     # Update reservation status to canceled
