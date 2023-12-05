@@ -1,9 +1,7 @@
 import os
 from flask import request, jsonify,Flask,render_template,session,redirect,url_for
 import random
-from views.customer import customerView
-from views.reservation import reservationView
-from views.admin import adminView
+from views.factory import ViewFactory
 from flask import flash
 from datetime import datetime, time
 
@@ -41,27 +39,30 @@ def make_reservation():
 @app.route('/api/new_customer', methods=['POST'])
 def add_customer():
     """Add a new customer."""
-    username=request.form.get('username'),
+    username=request.form.get('username')
     # Check if the username already exists
-    if customerView(username=username).find():
-        return jsonify({"success": False, "message": "Username already exists"})
+    existing_customer = ViewFactory.create_customer_view(username=username).find()
+    print(f"{existing_customer}")
+    if existing_customer:
+        return render_template('error_user_not_found.html', error_message="Username already exists")
+#        return jsonify({"success": False, "message": "Username already exists"})
     
     customerId=random.randint(1000,9999),
     name=request.form.get('name'),
     address=request.form.get('address'),
     phoneNumber=request.form.get('phone_number'),
     email=request.form.get('email')
-    print(f"customerID is {customerId}")
-    customer = customerView(
+    print(f"customerID is {customerId} and username is {username}")
+    customer = ViewFactory.create_customer_view(
     customerId[0],
-    username[0],
+    username,
     name[0],
     address[0],
     phoneNumber[0],
     email
     )
     session['user_data'] = {
-            "username": username[0],
+            "username": username,
             "name": name[0],
             "email": email,
             "phone_number": phoneNumber[0]
@@ -72,7 +73,7 @@ def add_customer():
 @app.route('/login', methods=['POST'])
 def login():
     """Handle user login."""
-    customer = customerView(username=request.form.get('username'))
+    customer = ViewFactory.create_customer_view(username=request.form.get('username'))
     user=customer.find()
 
     if user:
@@ -126,7 +127,7 @@ def submit_reservation():
     username=request.form['username'],
     reservationId=random.randint(10000,99999),
     number_of_seats=request.form['number_of_seats'],
-    reservation = reservationView(
+    reservation = ViewFactory.create_reservation_view(
         username[0],
         reservationId[0],
         number_of_seats[0],
@@ -145,13 +146,13 @@ def admin_dashboard():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
     
-    admin=adminView()
+    admin=ViewFactory.create_admin_view()
     return render_template('admin_dashboard.html', customer_reservations=admin.adminData())
 
 @app.route('/remove_all_customers', methods=['POST'])
 def remove_all_customers():
     """Remove all customers."""
-    admin_view = adminView()
+    admin_view = ViewFactory.create_admin_view()
     result = admin_view.remove_all_customers()
     if result['success']:
         return render_template('remove_customers_success.html')
@@ -162,14 +163,14 @@ def remove_all_customers():
 @app.route('/update_customer_status/<string:customer_username>/<int:reservation_id>', methods=['POST'])
 def update_customer_status(customer_username, reservation_id):
     """Update customer status."""
-    admin_view = adminView()
+    admin_view = ViewFactory.create_admin_view()
     admin_view.update_customer_status(customer_username, reservation_id)
     return redirect('/admin/dashboard')
 
 @app.route('/cancel_reservation/<string:customer_username>/<int:reservation_id>', methods=['POST'])
 def cancel_reservation(customer_username, reservation_id):
     """Cancel a reservation."""
-    admin_view = adminView()
+    admin_view = ViewFactory.create_admin_view()
 
     # Update reservation status to canceled
     result_reservation = admin_view.cancel_reservation(customer_username, reservation_id)

@@ -131,8 +131,10 @@ class customerView:
         Returns:
         dict: Dictionary representing the customer document in the database.
         """
+        print(f"Search username: {self.username}")
         customers_collection = self.db.customers
         user = customers_collection.find_one({"username": self.username})
+        print(f"user is {user}")
         return user
     
     def find_customer_id_by_username(self, username):
